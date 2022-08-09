@@ -70,5 +70,5 @@ To run the server, run the following command:
 
   # Heroku Deployment
   - The same server is deployed to Heroku Service.
-  - `https://`
+  - `https://backend-assignment-fastapi.herokuapp.com/`
   - Here the DataBase is empty and if you want to use the end points you can POST a request to this URL which will populate the server so that you can use different endpoints.
