@@ -1,168 +1,74 @@
-# Backend Assignment
+# Backend-Assingment
 
-Create REST APIs using Python (Flask, Django, any other web framework of your choice) for managing the user’s data.  
-You can use database(i.e SQL, NOSQL) of your choice to store the data.  
-Take sample data from [here](https://datapeace-storage.s3-us-west-2.amazonaws.com/dummy_data/users.json).
+## Setup and Run the Server
 
-It should have following functionalities:
+To run the server, run the following command:
+  
+  ```python main:app```
+  or
+  ```python main:app --reload```for auto-reload.
+  or 
+  ```python main:app --host=localhost --port=8080``` for custom host and port.
+  or 
+  ```python main:app --host=localhost --port=8080 --reload``` for custom host and port with auto-reload.
 
-- list users (`/api/users GET`)
-- search for a user by name
-- sort list by field name
-- pagination of users list
-- create new user (`/api/users - POST`)
-- get detail of a user (`/api/users/<id> - GET`)
-- update details of a user (`/api/users - PUT`)
-- delete a user (`/api/users - DELETE`)
+  If python is not recognized, you can use replace ```python``` with ```python3``` command
 
-_Attention to detail and meeting all requirements is important in the project. Completing it in less time will not give you any preference._
+  example:
+  ```python3 main:app```
 
-## **Task Overview**
+  ## Usage
+  The folllowing end points are available:
 
-User should have the following attributes:-
+  - `/`:
+    -`GET`:
+      - Root endpoint. Returns ```{"message": "Hello World"}```
 
-```
-ID
-First Name
-Last Name
-Company Name
-Age
-City
-State
-Zip
-Email
-Web
-```
+  - `/api/users?page=<page>&limit=<limit>&sort=<sort>&name=<name>`:
+    -`GET`:
+      - Returns users filtered by the given parameters.
 
-Application should have the following endpoints:
+  - `/api/users/`:
+    -`POST`:
+      - Creates a new user.
+      - Returns `{}` if the user was created successfully with status sode of `201`.
+      - if user with the given id already exists, returns `{"detail":"user already exists"}` with status code of `400`.
 
-- `/api/users - GET` - To list the users
+  - `/api/users/<id>/`:
+    -`GET`:
+      - Returns the user with the given id.
+      - If no user with the given id exists, returns `{"detail":"uuser not found"}` with status code of `404`.
 
-  - Response with HTTP status code 200 on success
+  - `/api/users/<id>/`:
+    -`PUT`:
+      - Updates the user with the given id.
+      - Only the given fields are updated. And remaining fields are not updated.
+      - If no user with the given id exists, returns `{"detail":"user not found"}` with status code of `404`.
+      - Returns `{}` if the user was updated successfully with status sode of `200`.
+  
+  - `/api/users/<id>/`:
+    -`DELETE`:
+      - Deletes the user with the given id.
+      - If no user with the given id exists, returns `{"detail":"user not found"}` with status code of `404`.
+      - Returns `{}` if the user was deleted successfully with status sode of `200`.
 
-    ```json
-    [
-      {
-        "id": 1,
-        "first_name": "James",
-        "last_name": "Butt",
-        "company_name": "Benton, John B Jr",
-        "city": "New Orleans",
-        "state": "LA",
-        "zip": 70116,
-        "email": "jbutt@gmail.com",
-        "web": "http://www.bentonjohnbjr.com",
-        "age": 70
-      },
-      {
-        "id": 2,
-        "first_name": "Josephine",
-        "last_name": "Darakjy",
-        "company_name": "Chanay, Jeffrey A Esq",
-        "city": "Brighton",
-        "state": "MI",
-        "zip": 48116,
-        "email": "josephine_darakjy@darakjy.org",
-        "web": "http://www.chanayjeffreyaesq.com",
-        "age": 48
-      }
-    ]
-    ```
+  - `/populateDB`:
+    -`POST`:
+      - Populates the database with the given sample users.
+      - Returns `{"message": "Successfully populated database"}` if the database was populated successfully with status sode of `200`.
 
-  - Also, supports some query parameters:
-  - page - a number for pagination
-  - limit - no. of items to be returned, default limit is 5
-  - name - search user by name as a substring in First Name or Last Name (Note, use substring matching algorithm/pattern to match the name). It should be case-insensitive.
-  - Sort - name of attribute, the items to be sorted. By default it returns items in ascending order if this parameter exist, and if the value of parameter is prefixed with ‘-’ character, then it should return items in descending order
+  - `/docs`:
+    -`GET`:
+      - Returns the documentation in markdown format.
+      - Swagger documentation is used for Documention and examples for input data models are given for `POST`,`PUT` endpoints for creating and updating users.
 
-  Sample query endpoint:- `/api/users?page=1&limit=10&name=James&sort=-age` This endpoint should return list of 10 users whose first name or last name contains substring given name and sort the users by age in descending order of page 1.
+## Deployment
+  
+  # DataBase Used: 
+  - For the sake of simplicity DataBase used is SQLite.
+  - This API can be connected to any SQL DataBase using URL and Password if we want to use it with SQL Server(POSTGRES, MySQL, etc.,)
 
-- `/api/users - POST` - To create a new user
-
-  - Request Payload should be like in json format :-
-
-    ```json
-    {
-      "id": 2,
-      "first_name": "Josephine",
-      "last_name": "Darakjy",
-      "company_name": "Chanay, Jeffrey A Esq",
-      "city": "Brighton",
-      "state": "MI",
-      "zip": 48116,
-      "email": "josephine_darakjy@darakjy.org",
-      "web": "http://www.chanayjeffreyaesq.com",
-      "age": 48
-    }
-    ```
-
-  - Response with HTTP status code 201 on success
-    ```json
-    {}
-    ```
-  - This endpoint will create a new user inside the database
-
-- `/api/users/{id} - GET` - To get the details of a user
-
-  1. Here {id} will be the id of the user in path parameter
-  1. Response with HTTP status code 200 on success
-
-  ```json
-  {
-    "id": 1,
-    "first_name": "James",
-    "last_name": "Butt",
-    "company_name": "Benton, John B Jr",
-    "city": "New Orleans",
-    "state": "LA",
-    "zip": 70116,
-    "email": "jbutt@gmail.com",
-    "web": "http://www.bentonjohnbjr.com",
-    "age": 70
-  }
-  ```
-
-  Sample query looks like:- `/api/users/1 GET`
-
-- `/api/users/{id} PUT` - To update the details of a user
-
-  - Here {id} will be the id of the user in path parameter
-  - Request Payload should be like in json format for updating first name, last name and age:-
-    ```json
-    {
-      "first_name": "Josephine",
-      "last_name": "Darakjy",
-      "age": 48
-    }
-    ```
-  - Response with HTTP status code 200 on success
-    {}
-
-- `/api/users/{id} DELETE` - To delete the user
-
-  - Here {id} will be the id of the user in path parameter
-  - Response with HTTP status code 200 on success
-
-    ```json
-    {}
-    ```
-
-## Resources:
-
-- For sample data [https://datapeace-storage.s3-us-west-2.amazonaws.com/dummy_data/users.json](https://datapeace-storage.s3-us-west-2.amazonaws.com/dummy_data/users.json)
-
-## **Instructions**
-
-- [ ] README.md should have all the details and instructions like how to setup and run the project
-- [ ] Repo should not contain irrelevant folders/files like cache files, build/dist directories etc.
-- [ ] Create API documentation using Swagger or similar framework
-- [ ] Follow these steps for submission:
-  1. Fork the repository
-  1. Create issues and work on them in their respective branches
-  1. Complete the tasks while following all instructions
-  1. Create MRs and merge into main branch
-  1. When done, Test if all task requirements are met and instructions followed
-  1. Push code to github
-  1. Deploy/Host your solution
-  1. Reply to the same email with the URLs for **repo**, **hosted API** and **hosted documentation** 
-- For any queries please email us at [hiring@truevalueaccess.com](mailto:hiring@truevalueaccess.com)
+  # Heroku Deployment
+  - The same server is deployed to Heroku Service.
+  - `https://`
+  - Here the DataBase is empty and if you want to use the end points you can POST a request to this URL which will populate the server so that you can use different endpoints.
